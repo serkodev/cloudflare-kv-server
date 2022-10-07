@@ -1,0 +1,10 @@
+{
+  "extends": "@antfu",
+  "ignorePatterns": "**/*.json",
+  "rules": {
+    "no-console": "off",
+    "curly": "off",
+    "@typescript-eslint/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+    "@typescript-eslint/no-unused-vars": "warn"
+  }
+}
