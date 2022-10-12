@@ -9,7 +9,8 @@
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true
+    "skipDefaultLibCheck": true,
+    "types": ["@cloudflare/workers-types"]
   },
   "exclude": ["node_modules", "dist"]
 }
