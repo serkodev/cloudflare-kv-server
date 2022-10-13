@@ -1,28 +1,11 @@
-import type { RouterHandler, RouterResponse } from '@tsndr/cloudflare-worker-router'
 import { Router } from '@tsndr/cloudflare-worker-router'
-
-const errorResponse = (res: RouterResponse, message: string) => {
-  res.status = 400
-  res.body = message
-}
+import namespaceMiddleware from './middleware/namespace'
 
 const router = new Router()
 
-const namespaceMiddleware: RouterHandler = ({ req, res, env, next }) => {
-  if (!req.params.namespace_identifier) {
-    errorResponse(res, 'invalid param')
-    return
-  }
-  const namespaceIdentifier = decodeURIComponent(req.params.namespace_identifier)
-  if (!env[namespaceIdentifier]) {
-    errorResponse(res, 'invalid namespace')
-    return
-  }
-  req.namespace = env[namespaceIdentifier]
-  return next()
-}
+router.use(namespaceMiddleware)
 
-router.get(':namespace_identifier/keys', namespaceMiddleware, async ({ req, res }) => {
+router.get(':namespace_identifier/keys', async ({ req, res }) => {
   const { limit, cursor, prefix } = req.query
   const val = await req.namespace.list({
     ...(limit !== undefined && { limit: parseInt(limit) }),
@@ -32,7 +15,7 @@ router.get(':namespace_identifier/keys', namespaceMiddleware, async ({ req, res 
   res.body = JSON.stringify(val)
 })
 
-router.get(':namespace_identifier/values/:key_name', namespaceMiddleware, async ({ req, res }) => {
+router.get(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const val = await req.namespace.get(key, {
@@ -42,7 +25,7 @@ router.get(':namespace_identifier/values/:key_name', namespaceMiddleware, async 
 })
 
 // Cloudflare KV API (/metadata/:key_name) returns without value
-router.get(':namespace_identifier/values_metadata/:key_name', namespaceMiddleware, async ({ req, res }) => {
+router.get(':namespace_identifier/values_metadata/:key_name', async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const val = await req.namespace.getWithMetadata(key, {
@@ -51,7 +34,7 @@ router.get(':namespace_identifier/values_metadata/:key_name', namespaceMiddlewar
   res.body = JSON.stringify(val)
 })
 
-router.put(':namespace_identifier/values/:key_name', namespaceMiddleware, async ({ req, res }) => {
+router.put(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const { expiration, expiration_ttl, metadata } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const value = await req.text()
@@ -63,7 +46,7 @@ router.put(':namespace_identifier/values/:key_name', namespaceMiddleware, async 
   res.body = 'success'
 })
 
-router.delete(':namespace_identifier/values/:key_name', namespaceMiddleware, async ({ req, res }) => {
+router.delete(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const key = decodeURIComponent(req.params.key_name)
   await req.namespace.delete(key)
   res.body = 'success'
