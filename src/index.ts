@@ -7,7 +7,7 @@ router.use(namespaceMiddleware)
 
 router.get(':namespace_identifier/keys', async ({ req, res }) => {
   const { limit, cursor, prefix } = req.query
-  const val = await req.namespace.list({
+  const val = await req.namespace!.list({
     ...(limit !== undefined && { limit: parseInt(limit) }),
     cursor,
     prefix,
@@ -18,7 +18,7 @@ router.get(':namespace_identifier/keys', async ({ req, res }) => {
 router.get(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
-  const val = await req.namespace.get(key, {
+  const val = await req.namespace!.get(key, {
     ...(cache_ttl !== undefined && { cacheTtl: parseInt(cache_ttl) }),
   })
   res.body = JSON.stringify(val)
@@ -28,7 +28,7 @@ router.get(':namespace_identifier/values/:key_name', async ({ req, res }) => {
 router.get(':namespace_identifier/values_metadata/:key_name', async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
-  const val = await req.namespace.getWithMetadata(key, {
+  const val = await req.namespace!.getWithMetadata(key, {
     ...(cache_ttl !== undefined && { cacheTtl: parseInt(cache_ttl) }),
   })
   res.body = JSON.stringify(val)
@@ -38,7 +38,7 @@ router.put(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const { expiration, expiration_ttl, metadata } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const value = await req.text()
-  await req.namespace.put(key, value, {
+  await req.namespace!.put(key, value, {
     ...(expiration !== undefined && { expiration: parseInt(expiration) }),
     ...(expiration_ttl !== undefined && { expirationTtl: parseInt(expiration_ttl) }),
     metadata,
@@ -48,7 +48,7 @@ router.put(':namespace_identifier/values/:key_name', async ({ req, res }) => {
 
 router.delete(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   const key = decodeURIComponent(req.params.key_name)
-  await req.namespace.delete(key)
+  await req.namespace!.delete(key)
   res.body = 'success'
 })
 

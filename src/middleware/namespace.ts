@@ -2,7 +2,7 @@ import type { RouterHandler } from '@tsndr/cloudflare-worker-router'
 
 declare module '@tsndr/cloudflare-worker-router' {
   interface RouterRequest {
-    namespace: KVNamespace
+    namespace?: KVNamespace
   }
 }
 
