@@ -1,12 +1,14 @@
 import { Router } from '@tsndr/cloudflare-worker-router'
+import authMiddleware, { Action } from './middleware/auth'
 import namespaceMiddleware from './middleware/namespace'
 
 const router = new Router()
 
 router.use(namespaceMiddleware)
 
-router.get(':namespace_identifier/keys', async ({ req, res }) => {
+router.get(':namespace_identifier/keys', authMiddleware(Action.List), async ({ req, res }) => {
   const { limit, cursor, prefix } = req.query
+  // TODO: manually check prefix from auth
   const val = await req.namespace!.list({
     ...(limit !== undefined && { limit: parseInt(limit) }),
     cursor,
@@ -15,7 +17,7 @@ router.get(':namespace_identifier/keys', async ({ req, res }) => {
   res.body = JSON.stringify(val)
 })
 
-router.get(':namespace_identifier/values/:key_name', async ({ req, res }) => {
+router.get(':namespace_identifier/values/:key_name', authMiddleware(Action.Get), async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const val = await req.namespace!.get(key, {
@@ -25,7 +27,7 @@ router.get(':namespace_identifier/values/:key_name', async ({ req, res }) => {
 })
 
 // Cloudflare KV API (/metadata/:key_name) returns without value
-router.get(':namespace_identifier/values_metadata/:key_name', async ({ req, res }) => {
+router.get(':namespace_identifier/values_metadata/:key_name', authMiddleware(Action.Get | Action.GetWithMetaData), async ({ req, res }) => {
   const { cache_ttl } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const val = await req.namespace!.getWithMetadata(key, {
@@ -34,7 +36,7 @@ router.get(':namespace_identifier/values_metadata/:key_name', async ({ req, res 
   res.body = JSON.stringify(val)
 })
 
-router.put(':namespace_identifier/values/:key_name', async ({ req, res }) => {
+router.put(':namespace_identifier/values/:key_name', authMiddleware(Action.Put), async ({ req, res }) => {
   const { expiration, expiration_ttl, metadata } = req.query
   const key = decodeURIComponent(req.params.key_name)
   const value = await req.text()
@@ -46,7 +48,7 @@ router.put(':namespace_identifier/values/:key_name', async ({ req, res }) => {
   res.body = 'success'
 })
 
-router.delete(':namespace_identifier/values/:key_name', async ({ req, res }) => {
+router.delete(':namespace_identifier/values/:key_name', authMiddleware(Action.Delete), async ({ req, res }) => {
   const key = decodeURIComponent(req.params.key_name)
   await req.namespace!.delete(key)
   res.body = 'success'
