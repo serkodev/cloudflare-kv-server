@@ -1,7 +1,17 @@
-import type { RouterHandler } from '@tsndr/cloudflare-worker-router'
+import type { RouterHandler, RouterRequest } from '@tsndr/cloudflare-worker-router'
 import { escapeRegExp } from 'lodash'
 import type { JwtPayload } from '@tsndr/cloudflare-worker-jwt'
 import jwt from '@tsndr/cloudflare-worker-jwt'
+
+interface AuthTokenPayload extends JwtPayload {
+  data: Permission[]
+}
+
+declare module '@tsndr/cloudflare-worker-router' {
+  interface RouterRequest {
+    permissions?: Permission[]
+  }
+}
 
 export enum Action {
   None = 0,
@@ -13,9 +23,10 @@ export enum Action {
   All = List | Get | GetWithMetaData | Put | Delete,
 }
 
-interface Permission {
+export interface Permission {
   namespaces?: string
   keys?: string
+  list_keys_prefix?: string
   action: Action
 }
 
@@ -38,6 +49,13 @@ export const validMatcher = (str: string, pattern?: string) => {
   return convertRegex(pattern).test(str)
 }
 
+export const validKeysPrefix = (req: RouterRequest) => {
+  const { prefix } = req.query
+  const permissions = req.permissions!.filter(permission => validMatcher(prefix, permission.list_keys_prefix))
+  if (permissions.length === 0)
+    throw new Error('token no permission')
+}
+
 // expire: -1 = never
 export const createToken = async (permissions: Permission[], expire: number | undefined, secret: string): Promise<string> => {
   return await jwt.sign({
@@ -46,11 +64,13 @@ export const createToken = async (permissions: Permission[], expire: number | un
   }, secret)
 }
 
-export const decodeToken = async (token: string, secret: string): Promise<JwtPayload | undefined> => {
+export const decodeToken = async (token: string, secret: string): Promise<AuthTokenPayload | undefined> => {
   if (await jwt.verify(token, secret)) {
     try {
       const { payload } = await jwt.decode(token)
-      return payload
+      if (!payload.data || !Array.isArray(payload.data))
+        throw new Error('invalid token payload')
+      return payload as AuthTokenPayload
     } catch (e) {}
   }
 }
@@ -64,7 +84,7 @@ const authMiddleware = (action: Action): RouterHandler => async ({ req, next }) 
     throw new Error('invalid request')
 
   const payload = await decodeToken(authToken, process.env.AUTH_SECRET)
-  if (payload === undefined || !Array.isArray(payload.data))
+  if (payload === undefined)
     throw new Error('invalid token')
 
   if (payload.exp !== undefined && payload.exp < Date.now())
@@ -74,16 +94,16 @@ const authMiddleware = (action: Action): RouterHandler => async ({ req, next }) 
 
   permissions = permissions.filter(permission => (permission.action & action) === action)
 
-  if (req.params.namespace_identifier) {
+  if (req.params.namespace_identifier)
     permissions = permissions.filter(permission => validMatcher(req.params.namespace_identifier, permission.namespaces))
-  }
-  if (req.params.key_name) {
+
+  if (req.params.key_name)
     permissions = permissions.filter(permission => validMatcher(req.params.key_name, permission.keys))
-  }
 
   if (permissions.length === 0)
-    return
+    throw new Error('token no permission')
 
+  req.permissions = permissions
   await next()
 }
 

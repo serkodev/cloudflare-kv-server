@@ -1,5 +1,5 @@
 import { Router } from '@tsndr/cloudflare-worker-router'
-import authMiddleware, { Action } from './middleware/auth'
+import authMiddleware, { Action, validKeysPrefix } from './middleware/auth'
 import namespaceMiddleware from './middleware/namespace'
 
 const router = new Router()
@@ -8,7 +8,10 @@ router.use(namespaceMiddleware)
 
 router.get(':namespace_identifier/keys', authMiddleware(Action.List), async ({ req, res }) => {
   const { limit, cursor, prefix } = req.query
-  // TODO: manually check prefix from auth
+
+  // manually check prefix from auth
+  validKeysPrefix(req)
+
   const val = await req.namespace!.list({
     ...(limit !== undefined && { limit: parseInt(limit) }),
     cursor,

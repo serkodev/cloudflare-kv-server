@@ -1,6 +1,6 @@
 import type { RouterContext, RouterRequest, RouterResponse } from '@tsndr/cloudflare-worker-router'
 import { Headers as HeadersPolyfill } from 'headers-polyfill'
-import authMiddleware, { Action, createToken, decodeToken } from './auth'
+import authMiddleware, { Action, createToken, decodeToken, validKeysPrefix } from './auth'
 
 const AUTH_SECRET = process.env.AUTH_SECRET || ''
 const EXPIRE = Date.now() + 60 * 10 * 1000
@@ -36,13 +36,11 @@ test('key', async () => {
   }
   {
     const ctx = getContext(token, 'not_foo', 'bar')
-    await authMiddleware(Action.Get)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Get)(ctx)).rejects.toThrow()
   }
   {
     const ctx = getContext(token, 'not_foo', 'not_bar')
-    await authMiddleware(Action.Get)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Get)(ctx)).rejects.toThrow()
   }
 })
 
@@ -65,13 +63,11 @@ test('wildcard', async () => {
   }
   {
     const ctx = getContext(token, 'foo', 'ba')
-    await authMiddleware(Action.Get)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Get)(ctx)).rejects.toThrow()
   }
   {
     const ctx = getContext(token, 'boo', 'bar')
-    await authMiddleware(Action.Get)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Get)(ctx)).rejects.toThrow()
   }
 })
 
@@ -98,8 +94,7 @@ test('single action', async () => {
   }
   {
     const ctx = getContext(token, 'foo', 'bar')
-    await authMiddleware(Action.Put)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Put)(ctx)).rejects.toThrow()
   }
 })
 
@@ -124,8 +119,7 @@ test('multi actions', async () => {
   }
   {
     const ctx = getContext(token, 'foo', 'bar')
-    await authMiddleware(Action.Put)(ctx)
-    expect(ctx.next).toHaveBeenCalledTimes(0)
+    await expect(authMiddleware(Action.Put)(ctx)).rejects.toThrow()
   }
 })
 
@@ -144,6 +138,52 @@ test('token no expire', async () => {
     await authMiddleware(Action.Get)(ctx)
     expect(ctx.next).toHaveBeenCalledTimes(1)
   }
+})
+
+test('validKeysPrefix', () => {
+  const reqBase = {
+    url: '',
+    method: '',
+    body: undefined,
+    params: {},
+    headers: new HeadersPolyfill() as unknown as Headers,
+  }
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List }],
+    query: { prefix: 'foo' },
+  })).not.toThrow()
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List, list_keys_prefix: 'fo*' }],
+    query: { prefix: 'foo' },
+  })).not.toThrow()
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List, list_keys_prefix: '*' }],
+    query: { prefix: 'foo' },
+  })).not.toThrow()
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List, list_keys_prefix: '/.*/' }],
+    query: { prefix: 'foo' },
+  })).not.toThrow()
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List, list_keys_prefix: 'foo' }],
+    query: { prefix: 'foo' },
+  })).not.toThrow()
+
+  expect(() => validKeysPrefix({
+    ...reqBase,
+    permissions: [{ action: Action.List, list_keys_prefix: 'foo' }],
+    query: { prefix: 'bar' },
+  })).toThrow()
 })
 
 test('gen token', async () => {
