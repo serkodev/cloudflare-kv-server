@@ -49,11 +49,12 @@ export const validMatcher = (str: string, pattern?: string) => {
   return convertRegex(pattern).test(str)
 }
 
-export const validKeysPrefix = (req: RouterRequest) => {
+export const validKeysPrefix = (req: RouterRequest): boolean => {
+  if (!req.permissions)
+    return true
   const { prefix } = req.query
   const permissions = req.permissions!.filter(permission => validMatcher(prefix, permission.list_keys_prefix))
-  if (permissions.length === 0)
-    throw new Error('token no permission')
+  return permissions.length > 0
 }
 
 // expire: -1 = never
@@ -75,15 +76,15 @@ export const decodeToken = async (token: string, secret: string): Promise<AuthTo
   }
 }
 
-const authMiddleware = (action: Action): RouterHandler => async ({ req, next }) => {
-  if (!process.env.AUTH_SECRET)
+const authMiddleware = (action: Action): RouterHandler => async ({ req, env, next }) => {
+  if (!env.AUTH_SECRET)
     return await next()
 
-  const authToken = req.headers.get('x-auth')
+  const authToken = req.headers.get('x-auth') || req.query.auth
   if (!authToken)
     throw new Error('invalid request')
 
-  const payload = await decodeToken(authToken, process.env.AUTH_SECRET)
+  const payload = await decodeToken(authToken, env.AUTH_SECRET)
   if (payload === undefined)
     throw new Error('invalid token')
 

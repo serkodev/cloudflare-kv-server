@@ -20,7 +20,7 @@ const getContext = (auth: string, namespace_identifier?: string, key_name?: stri
     body: undefined,
   }
   return {
-    env: {},
+    env: process.env,
     req,
     res: {} as RouterResponse,
     next: jest.fn(),
@@ -149,41 +149,41 @@ test('validKeysPrefix', () => {
     headers: new HeadersPolyfill() as unknown as Headers,
   }
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List }],
     query: { prefix: 'foo' },
-  })).not.toThrow()
+  })).toBe(true)
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List, list_keys_prefix: 'fo*' }],
     query: { prefix: 'foo' },
-  })).not.toThrow()
+  })).toBe(true)
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List, list_keys_prefix: '*' }],
     query: { prefix: 'foo' },
-  })).not.toThrow()
+  })).toBe(true)
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List, list_keys_prefix: '/.*/' }],
     query: { prefix: 'foo' },
-  })).not.toThrow()
+  })).toBe(true)
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List, list_keys_prefix: 'foo' }],
     query: { prefix: 'foo' },
-  })).not.toThrow()
+  })).toBe(true)
 
-  expect(() => validKeysPrefix({
+  expect(validKeysPrefix({
     ...reqBase,
     permissions: [{ action: Action.List, list_keys_prefix: 'foo' }],
     query: { prefix: 'bar' },
-  })).toThrow()
+  })).toBe(false)
 })
 
 test('gen token', async () => {
@@ -194,8 +194,8 @@ test('gen token', async () => {
       action: Action.All,
     },
   ]
-  const token = await createToken(data, Date.now(), AUTH_SECRET)
-  // console.log(token)
+  const token = await createToken(data, undefined, AUTH_SECRET)
+  console.log(token)
   expect(typeof token).toBe('string')
   const decode = await decodeToken(token, AUTH_SECRET)
   expect(decode!.data).toStrictEqual(data)

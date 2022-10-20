@@ -10,7 +10,8 @@ router.get(':namespace_identifier/keys', authMiddleware(Action.List), async ({ r
   const { limit, cursor, prefix } = req.query
 
   // manually check prefix from auth
-  validKeysPrefix(req)
+  if (!validKeysPrefix(req))
+    throw new Error('invalid key prefix')
 
   const val = await req.namespace!.list({
     ...(limit !== undefined && { limit: parseInt(limit) }),
@@ -58,7 +59,7 @@ router.delete(':namespace_identifier/values/:key_name', authMiddleware(Action.De
 })
 
 export default {
-  async fetch(request: Request, env: Record<string, KVNamespace>): Promise<Response> {
+  async fetch(request: Request, env: any): Promise<Response> {
     return router.handle(env, request)
   },
 }
