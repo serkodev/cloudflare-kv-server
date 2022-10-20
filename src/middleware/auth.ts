@@ -1,5 +1,5 @@
 import type { RouterHandler, RouterRequest } from '@tsndr/cloudflare-worker-router'
-import { escapeRegExp } from 'lodash'
+import escapeRegExp from 'lodash/escapeRegExp'
 import type { JwtPayload } from '@tsndr/cloudflare-worker-jwt'
 import jwt from '@tsndr/cloudflare-worker-jwt'
 
