@@ -40,7 +40,7 @@
     "lint": "eslint .",
     "start": "tsx ./src/index.ts",
     "dev:local": "tsx watch ./src/index.ts",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --config wrangler.dev.toml",
     "prepublishOnly": "pnpm build",
     "release": "pnpm lint && bump --commit --push --tag && npm publish",
     "test": "jest"

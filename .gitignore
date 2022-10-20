@@ -5,3 +5,4 @@ dist
 *.log
 *.tgz
 logs
+wrangler.dev.toml

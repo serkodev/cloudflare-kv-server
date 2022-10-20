@@ -1,0 +1,10 @@
+name = "cloudflare-kv-server"
+main = "src/index.ts"
+compatibility_date = "2022-10-11"
+
+# kv_namespaces = [
+#   { binding = "your_key_bind", id = "kv_namespace_id" }
+# ]
+
+# [vars]
+# AUTH_SECRET = "your_secret"
