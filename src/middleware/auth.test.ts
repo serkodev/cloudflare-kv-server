@@ -81,7 +81,7 @@ test('wildcard 2', async () => {
 })
 
 test('single action', async () => {
-  const token = await createToken([{ namespaces: 'foo', keys: 'bar', action: Action.Get }], EXPIRE, AUTH_SECRET)
+  const token = await createToken([{ action: Action.Get }], EXPIRE, AUTH_SECRET)
   {
     const ctx = getContext(token, 'foo', 'bar')
     await authMiddleware(Action.Get)(ctx)
@@ -99,7 +99,7 @@ test('single action', async () => {
 })
 
 test('multi actions', async () => {
-  const token = await createToken([{ namespaces: 'foo', keys: 'bar', action: Action.Get | Action.GetWithMetaData }], EXPIRE, AUTH_SECRET)
+  const token = await createToken([{ action: Action.Get | Action.GetWithMetaData }], EXPIRE, AUTH_SECRET)
   {
     const ctx = getContext(token, 'foo', 'bar')
     await authMiddleware(Action.Get)(ctx)
