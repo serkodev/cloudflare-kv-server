@@ -9,7 +9,8 @@ declare module '@tsndr/cloudflare-worker-router' {
 const namespaceMiddleware: RouterHandler = ({ req, env, next }) => {
   if (req.params.namespace_identifier) {
     const namespaceIdentifier = decodeURIComponent(req.params.namespace_identifier)
-    if (!env[namespaceIdentifier])
+    const namespace = env[namespaceIdentifier]
+    if (!namespace || typeof namespace !== 'object' || !namespace.get)
       throw new Error('invalid namespace')
     req.namespace = env[namespaceIdentifier]
   }
