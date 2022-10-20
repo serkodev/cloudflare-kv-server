@@ -1,5 +1,6 @@
 import type { RouterHandler } from '@tsndr/cloudflare-worker-router'
 import { escapeRegExp } from 'lodash'
+import type { JwtPayload } from '@tsndr/cloudflare-worker-jwt'
 import jwt from '@tsndr/cloudflare-worker-jwt'
 
 export enum Action {
@@ -37,18 +38,19 @@ export const validMatcher = (str: string, pattern?: string) => {
   return convertRegex(pattern).test(str)
 }
 
-export const createToken = async (permissions: Permission[], expire: number, secret: string): Promise<string> => {
+// expire: -1 = never
+export const createToken = async (permissions: Permission[], expire: number | undefined, secret: string): Promise<string> => {
   return await jwt.sign({
     exp: expire,
     data: permissions,
   }, secret)
 }
 
-export const decodeToken = async (token: string, secret: string): Promise<Permission[] | undefined> => {
+export const decodeToken = async (token: string, secret: string): Promise<JwtPayload | undefined> => {
   if (await jwt.verify(token, secret)) {
     try {
       const { payload } = await jwt.decode(token)
-      return payload.data as Permission[]
+      return payload
     } catch (e) {}
   }
 }
@@ -57,16 +59,18 @@ const authMiddleware = (action: Action): RouterHandler => async ({ req, next }) 
   if (!process.env.AUTH_SECRET)
     return await next()
 
-  const payload = req.headers.get('x-auth')
-  if (!payload) {
-    return // TODO
-  }
+  const authToken = req.headers.get('x-auth')
+  if (!authToken)
+    throw new Error('invalid request')
 
-  let permissions = await decodeToken(payload, process.env.AUTH_SECRET)
-  if (permissions === undefined) {
-    return // TODO
-  }
-  // TODO: expire token
+  const payload = await decodeToken(authToken, process.env.AUTH_SECRET)
+  if (payload === undefined || !Array.isArray(payload.data))
+    throw new Error('invalid token')
+
+  if (payload.exp !== undefined && payload.exp < Date.now())
+    throw new Error('token expired')
+
+  let permissions: Permission[] = payload.data
 
   permissions = permissions.filter(permission => (permission.action & action) === action)
 

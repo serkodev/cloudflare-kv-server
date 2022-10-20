@@ -129,6 +129,23 @@ test('multi actions', async () => {
   }
 })
 
+test('token expire', async () => {
+  const token = await createToken([{ namespaces: '*', keys: '*', action: Action.All }], Date.now() - 1, AUTH_SECRET)
+  {
+    const ctx = getContext(token, 'foo', 'bar')
+    await expect(authMiddleware(Action.Get)(ctx)).rejects.toThrow('token expired')
+  }
+})
+
+test('token no expire', async () => {
+  const token = await createToken([{ namespaces: '*', keys: '*', action: Action.All }], undefined, AUTH_SECRET)
+  {
+    const ctx = getContext(token, 'foo', 'bar')
+    await authMiddleware(Action.Get)(ctx)
+    expect(ctx.next).toHaveBeenCalledTimes(1)
+  }
+})
+
 test('gen token', async () => {
   const data = [
     {
@@ -141,5 +158,5 @@ test('gen token', async () => {
   // console.log(token)
   expect(typeof token).toBe('string')
   const decode = await decodeToken(token, AUTH_SECRET)
-  expect(decode).toStrictEqual(data)
+  expect(decode!.data).toStrictEqual(data)
 })
