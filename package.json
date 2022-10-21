@@ -45,7 +45,7 @@
     "release": "pnpm lint && bump --commit --push --tag && npm publish",
     "test": "jest"
   },
-  "packageManager": "pnpm@7.0.0",
+  "packageManager": "pnpm@7.13.6",
   "devDependencies": {
     "@antfu/eslint-config": "^0.23.1",
     "@cloudflare/workers-types": "^3.16.0",
