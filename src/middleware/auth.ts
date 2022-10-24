@@ -37,7 +37,7 @@ const convertRegex = (str: string): RegExp => {
     return new RegExp(pattern, flags)
   } else {
     // https://stackoverflow.com/questions/26246601/wildcard-string-comparison-in-javascript
-    const pattern = `^${str.split('*').map(escapeRegExp).join('.*')}$`
+    const pattern = `^${str.split('*').map(escapeRegExp).join('.*')}\$`
     return new RegExp(pattern)
   }
 }
