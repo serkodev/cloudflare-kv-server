@@ -46,14 +46,14 @@ const generate = async () => {
 
 <template>
   <div class="flex flex:col flex:row w:full ai:center">
-    <div class="w:800 flex flex:col gap:12 py:12">
+    <div class="w:768 flex flex:col gap:12 py:12">
       <div class="py:36">
-        <div class="f:26 f:bold py:8">
+        <div class="f:30 f:bold py:8">
           Auth Token Generator
         </div>
-        <div class="fg:sub-content">
+        <a class="fg:sub-content" href="https://github.com/serkodev/cloudflare-kv-server">
           cloudflare-kv-server
-        </div>
+        </a>
       </div>
 
       <div>
