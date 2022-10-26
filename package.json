@@ -26,7 +26,8 @@
     "dev": "wrangler dev --config wrangler.dev.toml",
     "prepublishOnly": "pnpm build",
     "release": "pnpm lint && bump --commit --push --tag && npm publish",
-    "test": "jest"
+    "test": "jest",
+    "gen:build": "pnpm -F 'auth-token-gen' build"
   },
   "packageManager": "pnpm@7.13.6",
   "devDependencies": {
