@@ -38,7 +38,7 @@ const model = computed(() => {
 <template>
   <div class="flex">
     <div class="flex pr:24 pt:6">
-      <span class="flex f:red jc:center">
+      <span class="flex fg:red jc:center">
         <i class="gg-remove" @click="emit('delete')" />
       </span>
     </div>
@@ -75,18 +75,18 @@ const model = computed(() => {
           >Delete
         </label>
       </div>
-      <div class="flex flex:1 gap:12 {f:gray-60;f:14}_label">
+      <div class="flex flex:1 gap:12 {fg:sub-content;f:14}_label">
         <div class="flex:1">
           <label>namespaces</label>
-          <input v-model="model.namespaces" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|gray-80" type="text" placeholder="*">
+          <input v-model="model.namespaces" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|sub-content" type="text" placeholder="*">
         </div>
         <div class="flex:1">
           <label>keys</label>
-          <input v-model="model.keys" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|gray-80" type="text" placeholder="*">
+          <input v-model="model.keys" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|sub-content" type="text" placeholder="*">
         </div>
         <div v-if="getAction(Action.List)" class="flex:1">
           <label>list_keys_prefix</label>
-          <input v-model="model.list_keys_prefix" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|gray-80" type="text" placeholder="*">
+          <input v-model="model.list_keys_prefix" class="mt:8 w:full f:16 p:12 r:8 b:1|solid|sub-content" type="text" placeholder="*">
         </div>
       </div>
     </div>

@@ -26,7 +26,6 @@ const generate = async () => {
       if (!t || isNaN(t))
         throw new Error('Invlid expire date')
       expireTime = t
-      console.log(expireTime)
     }
 
     const ps: Permission[] = JSON.parse(JSON.stringify(permissions.value))
@@ -38,6 +37,7 @@ const generate = async () => {
 
     token.value = await createToken(p, expireTime, secret.value)
   } catch (e) {
+    token.value = ''
     // eslint-disable-next-line no-alert
     window.alert(e)
   }
@@ -51,20 +51,20 @@ const generate = async () => {
         <div class="f:26 f:bold py:8">
           Auth Token Generator
         </div>
-        <div class="f:gray-80">
+        <div class="fg:sub-content">
           cloudflare-kv-server
         </div>
       </div>
 
       <div>
         <div class="f:bold py:16">
-          Permissions <span class="f:red">*</span>
+          Permissions <span class="fg:red">*</span>
         </div>
         <div class="flex flex:col gap:20">
           <template v-for="(_, i) in permissions" :key="i">
             <PermissionItem v-model="permissions[i]" @delete="permissions.splice(i, 1)" />
           </template>
-          <div class="w:full flex ac:center jc:center f:green-50 bg:green-94 r:12 py:16" @click="addPermission">
+          <div class="w:full flex ac:center jc:center fg:green-50 bg:green-94 r:12 py:16" @click="addPermission">
             <i class="gg-add" />
           </div>
         </div>
@@ -73,21 +73,21 @@ const generate = async () => {
       <div class="flex gap:12">
         <div class="flex:1">
           <div class="f:bold py:16">
-            Secret <span class="f:red">*</span>
+            Secret <span class="fg:red">*</span>
           </div>
-          <input v-model="secret" class="w:full f:16 p:12 r:8 b:1|solid|gray-80" type="text">
+          <input v-model="secret" class="w:full f:16 p:12 r:8 b:1|solid|sub-content" type="text">
         </div>
         <div class="flex:1">
           <div class="f:bold py:16">
             Expire (optional)
           </div>
-          <input v-model="expire" class="w:full f:16 p:12 r:8 b:1|solid|gray-80" type="text" placeholder="YYYY-MM-DD">
+          <input v-model="expire" class="w:full f:16 p:12 r:8 b:1|solid|sub-content" type="text" placeholder="YYYY-MM-DD">
         </div>
       </div>
 
-      <pre v-if="token" class="p:16 bg:gray-90 r:12 break-word white-space:pre-wrap">{{ token }}</pre>
+      <pre v-if="token" class="p:16 bg:gray-95 r:12 break-word white-space:pre-wrap">{{ token }}</pre>
 
-      <div class="w:full flex ac:center jc:center f:white bg:blue r:12 f:bold py:16" @click="generate">
+      <div class="w:full flex ac:center jc:center fg:white bg:blue r:12 f:bold py:16" @click="generate">
         Generate
       </div>
     </div>

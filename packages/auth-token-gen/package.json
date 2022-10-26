@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@master/css": "^1.37.2",
-    "@master/normal.css": "^1.9.7",
+    "@master/css": "2.0.0-beta.5",
+    "@master/normal.css": "2.0.0-beta.4",
     "css.gg": "^2.0.0",
     "vue": "^3.2.37"
   },
