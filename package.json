@@ -1,36 +1,19 @@
 {
-  "name": "ts-template",
-  "version": "0.0.0",
+  "name": "cloudflare-kv-server",
+  "version": "0.0.1",
   "license": "MIT",
   "author": "SerKo (http://github.com/serkodev)",
   "description": "",
   "keywords": [],
-  "homepage": "https://github.com/serkodev/ts-template#readme",
+  "homepage": "https://github.com/serkodev/cloudflare-kv-server#readme",
   "bugs": {
-    "url": "https://github.com/serkodev/ts-template/issues"
+    "url": "https://github.com/serkodev/cloudflare-kv-server/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/serkodev/ts-template.git"
+    "url": "git+https://github.com/serkodev/cloudflare-kv-server.git"
   },
   "main": "./dist/index.global.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
