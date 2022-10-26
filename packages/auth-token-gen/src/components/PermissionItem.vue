@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { type } from 'os'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Permission } from '@/middleware/auth'
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { Action } from '@/middleware/auth'
