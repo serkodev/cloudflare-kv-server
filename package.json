@@ -27,6 +27,7 @@
     "prepublishOnly": "pnpm build",
     "release": "pnpm lint && bump --commit --push --tag && npm publish",
     "test": "jest",
+    "gen:dev": "pnpm -F 'auth-token-gen' dev",
     "gen:build": "pnpm -F 'auth-token-gen' build"
   },
   "packageManager": "pnpm@7.13.6",
