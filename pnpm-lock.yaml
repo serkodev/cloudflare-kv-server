@@ -45,7 +45,8 @@ importers:
 
   packages/auth-token-gen:
     specifiers:
-      '@master/css': 2.0.0-beta.5
+      '@master/css': 2.0.0-beta.22
+      '@master/css-compiler': 2.0.0-beta.16
       '@master/normal.css': 2.0.0-beta.4
       '@vitejs/plugin-vue': ^3.1.0
       css.gg: ^2.0.0
@@ -54,11 +55,12 @@ importers:
       vue: ^3.2.37
       vue-tsc: ^1.0.9
     dependencies:
-      '@master/css': 2.0.0-beta.5
+      '@master/css': 2.0.0-beta.22
       '@master/normal.css': 2.0.0-beta.4
       css.gg: 2.0.0
       vue: 3.2.41
     devDependencies:
+      '@master/css-compiler': 2.0.0-beta.16_@master+css@2.0.0-beta.22
       '@vitejs/plugin-vue': 3.1.2_vite@3.1.8+vue@3.2.41
       typescript: 4.6.4
       vite: 3.1.8
@@ -920,10 +922,19 @@ packages:
       semver: 7.3.7
     dev: true
 
-  /@master/css/2.0.0-beta.5:
-    resolution: {integrity: sha512-YYBUzPwNHYdS4v+fVhXYsB4bHxmZWLVDgLfYKzgADWquA+Kpgn0dhkkliIrhL2mjf8/niY2qwO6cvo9IIsJatw==}
+  /@master/css-compiler/2.0.0-beta.16_@master+css@2.0.0-beta.22:
+    resolution: {integrity: sha512-wlC9B0ftCmIvdHY4zEe6t4Vh7LndkURsL4r61ubU9PzzF30y7f4Ql2KBdHOuXYhcmgyF/iftpbAVr4bbrM9Kzg==}
     engines: {node: '>=14'}
-    dev: false
+    peerDependencies:
+      '@master/css': ^2.0.0-beta.22
+    dependencies:
+      '@master/css': 2.0.0-beta.22
+      chalk: 4.1.2
+    dev: true
+
+  /@master/css/2.0.0-beta.22:
+    resolution: {integrity: sha512-itWM5dbnfVqYfes6Qk5TwmA0Uz/ZUdeLTQRok65fU3GbJyeAlsyianG0czhNoYJLql2/fwmM9iD9joOqFB8sCA==}
+    engines: {node: '>=14'}
 
   /@master/normal.css/2.0.0-beta.4:
     resolution: {integrity: sha512-tCo/cQKML+z3A2DJUK7bPvR7yfSp/eaVAEBk+iNCsNz5FsB2/B1P2IXtlgDFFKqTocb+OZzLIuCN/qA2+Brdlg==}

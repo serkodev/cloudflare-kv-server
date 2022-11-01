@@ -1,20 +1,10 @@
 import { createApp } from 'vue'
+import MasterCSS from '@master/css'
+// @ts-expect-error "js"
+import config from '../master.css.js'
 import '@master/normal.css'
-import MasterCSS, { configure, defaultColors } from '@master/css'
 import App from './App.vue'
 
-MasterCSS.init(configure({
-  scheme: {
-    preference: 'light',
-    storage: {
-      sync: true,
-      key: 'scheme',
-    },
-  },
-  colors: {
-    'content': defaultColors.black,
-    'sub-content': defaultColors.gray['60'],
-  },
-}))
+export const css = new MasterCSS({ config })
 
 createApp(App).mount('#app')
