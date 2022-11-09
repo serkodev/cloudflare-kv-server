@@ -76,11 +76,21 @@ export const decodeToken = async (token: string, secret: string): Promise<AuthTo
   }
 }
 
+const getRequestToken = (req: RouterRequest): string | null => {
+  const authorization = req.headers.get('authorization')
+  if (authorization) {
+    const [scheme, token] = authorization.split(' ')
+    if (scheme === 'Bearer')
+      return token
+  }
+  return null
+}
+
 const authMiddleware = (action: Action): RouterHandler => async ({ req, env, next }) => {
   if (!env.AUTH_SECRET)
     return await next()
 
-  const authToken = req.headers.get('x-auth') || req.query.auth
+  const authToken = getRequestToken(req) || req.query.auth
   if (!authToken)
     throw new Error('invalid request')
 

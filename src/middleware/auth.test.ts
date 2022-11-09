@@ -8,7 +8,7 @@ const EXPIRE = Date.now() + 60 * 10 * 1000
 const getContext = (auth: string, namespace_identifier?: string, key_name?: string): RouterContext => {
   const req: RouterRequest = {
     headers: new HeadersPolyfill({
-      'x-auth': auth,
+      authorization: `Bearer ${auth}`,
     }) as unknown as Headers,
     params: {
       ...(namespace_identifier && { namespace_identifier }),
