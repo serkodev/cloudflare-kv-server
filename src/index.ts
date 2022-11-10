@@ -43,7 +43,7 @@ router.get(':namespace_identifier/values_metadata/:key_name', authMiddleware(Act
 router.put(':namespace_identifier/values/:key_name', authMiddleware(Action.Put), async ({ req, res }) => {
   const { expiration, expiration_ttl, metadata } = req.query
   const key = decodeURIComponent(req.params.key_name)
-  const value = await req.text()
+  const value = req.body
   await req.namespace!.put(key, value, {
     ...(expiration !== undefined && { expiration: parseInt(expiration) }),
     ...(expiration_ttl !== undefined && { expirationTtl: parseInt(expiration_ttl) }),
