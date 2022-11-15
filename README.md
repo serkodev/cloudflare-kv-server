@@ -22,7 +22,7 @@ Please make sure you use the same Secret to match the token generator.
 If you setup an auth secret and generated a token please include it in `Authorization` HTTP header field with `Bearer <JWT auth token>` value. For example:
 
 ```
-Authorization: Bearer xxxxxx.xxxxxxxxxxx.xxxxxxxxx-xxxxx
+Authorization: Bearer xxxxxx.xxxxxxxxxxx.xxxxxxxxxxxxxx
 ```
 
 ### End points
